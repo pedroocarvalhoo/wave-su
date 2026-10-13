@@ -1,0 +1,36 @@
+{
+    "id": "deucalion_test",
+    "label": "Deucalion Test",
+    "clusters": {
+        "arm_a64fx_fujitsu": 160,
+        "x86_epyc_rome": 64,
+        "gpu_node_a100": 12
+    },
+    "queues": [
+        {
+            "name": "short",
+            "min_runtime_s": 0,
+            "max_runtime_s": 86400,
+            "max_nodes": 32,
+            "max_wait_s": 172800,
+            "priority_weight": 3
+        },
+        {
+            "name": "medium",
+            "min_runtime_s": 86400,
+            "max_runtime_s": 604800,
+            "max_nodes": 32,
+            "max_wait_s": 604800,
+            "priority_weight": 2
+        },
+        {
+            "name": "long",
+            "min_runtime_s": 604800,
+            "max_runtime_s": null,
+            "max_nodes": 32,
+            "max_wait_s": 1209600,
+            "priority_weight": 1
+        }
+    ],
+    "sla_policy": "enforce"
+}

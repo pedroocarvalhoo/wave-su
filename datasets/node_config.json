@@ -1,0 +1,68 @@
+{
+    "arm_a64fx_fujitsu": {
+        "base_frequency_ghz": 2.2,
+        "idle_power_w": 40,
+        "max_power_w": 180,
+        "memory_bandwidth_gb_s": 1024.0,
+        "frequencies": {
+            "1.8": 110,
+            "2.0": 145,
+            "2.2": 180
+        }
+    },
+    "x86_epyc_rome": {
+        "base_frequency_ghz": 2.25,
+        "idle_power_w": 120,
+        "max_power_w": 650,
+        "memory_bandwidth_gb_s": 409.6,
+        "frequencies": {
+            "1.5": 280,
+            "2.0": 480,
+            "2.25": 650
+        }
+    },
+    "x86_epyc_milan": {
+        "base_frequency_ghz": 2.45,
+        "idle_power_w": 140,
+        "max_power_w": 780,
+        "memory_bandwidth_gb_s": 204.8,
+        "frequencies": {
+            "1.5": 320,
+            "2.0": 580,
+            "2.45": 780
+        }
+    },
+    "x86_intel_icelake": {
+        "base_frequency_ghz": 2.6,
+        "idle_power_w": 150,
+        "max_power_w": 750,
+        "memory_bandwidth_gb_s": 204.8,
+        "frequencies": {
+            "1.8": 380,
+            "2.2": 620,
+            "2.6": 750
+        }
+    },
+    "gpu_node_a100": {
+        "base_frequency_ghz": 1.41,
+        "idle_power_w": 450,
+        "max_power_w": 2100,
+        "memory_bandwidth_gb_s": 6220.0,
+        "frequencies": {
+            "0.765": 1100,
+            "1.11": 1600,
+            "1.41": 2100
+        }
+    },
+    "gpu_node_mi250x": {
+        "base_frequency_ghz": 1.7,
+        "idle_power_w": 550,
+        "max_power_w": 2900,
+        "memory_bandwidth_gb_s": 3200.0,
+        "frequencies": {
+            "1.0": 1300,
+            "1.4": 2100,
+            "1.7": 2900
+        }
+    }
+}

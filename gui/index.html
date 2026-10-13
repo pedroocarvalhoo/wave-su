@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WAVE — Workload Aware Vessim Extension GUI for sustainable HPC simulation management">
+    <title>WAVE — Simulation Dashboard</title>
+    <link rel="stylesheet" href="/static/css/style.css?v=2.1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=2.1.1">
+</head>
+<body>
+    <div id="app">
+        <!-- ═══ Header ═══ -->
+        <header class="header">
+            <div class="header-brand">
+                <span class="header-logo">
+                    <img class="header-logo-image" src="/brand/wave-readme.png" alt="WAVE" />
+                </span>
+                <span class="header-subtitle">Sustainable HPC simulation</span>
+            </div>
+            <div class="header-status" id="header-status">
+                <span class="status-dot" id="status-dot"></span>
+                <span id="status-text">Ready</span>
+            </div>
+        </header>
+
+        <!-- ═══ Navigation ═══ -->
+        <nav class="nav" id="main-nav">
+            <button class="nav-tab active" data-tab="simulation" id="nav-simulation">
+                <i class="fa-solid fa-sliders tab-icon"></i>
+                Simulation
+            </button>
+            <button class="nav-tab" data-tab="results" id="nav-results">
+                <i class="fa-solid fa-square-poll-vertical tab-icon"></i>
+                Results
+            </button>
+            <button class="nav-tab" data-tab="compare" id="nav-compare">
+                <i class="fa-solid fa-scale-balanced tab-icon"></i>
+                Compare
+            </button>
+            <button class="nav-tab" data-tab="datasets" id="nav-datasets">
+                <i class="fa-solid fa-database tab-icon"></i>
+                Datasets
+            </button>
+        </nav>
+
+        <!-- ═══ Main Content ═══ -->
+        <main class="main-content">
+
+            <!-- ═══════════ SIMULATION TAB ═══════════ -->
+            <section class="tab-panel active" id="tab-simulation">
+                <div class="section-header">
+                    <div>
+                        <h1 class="section-title">Microgrid Simulator</h1>
+                        <p class="section-subtitle">Click on any component to configure it</p>
+                    </div>
+                </div>
+
+                <form id="simulation-form" autocomplete="off">
+                    <!-- ── Microgrid Diagram ── -->
+                    <div class="mg-diagram" id="mg-diagram">
+                        <!-- Connection Lines SVG Overlay -->
+                        <div class="mg-connectors">
+                            <svg>
+                                <!-- Renewables to HPC -->
+                                <line x1="15%" y1="17%" x2="50%" y2="33%"></line>
+                                <!-- Grid to HPC -->
+                                <line x1="85%" y1="17%" x2="50%" y2="33%"></line>
+                                <!-- Datasets to HPC -->
+                                <line x1="15%" y1="50%" x2="50%" y2="33%"></line>
+                                <!-- Battery to HPC -->
+                                <line x1="85%" y1="50%" x2="50%" y2="33%"></line>
+                                <!-- Job Scheduler to HPC -->
+                                <line x1="15%" y1="83%" x2="50%" y2="33%"></line>
+                                <!-- Energy Scheduler to HPC -->
+                                <line x1="50%" y1="83%" x2="50%" y2="33%"></line>
+                                <!-- Advanced to HPC -->
+                                <line x1="85%" y1="83%" x2="50%" y2="33%"></line>
+                            </svg>
+                        </div>
+
+                        <!-- Renewable Sources Node -->
+                        <div class="mg-node mg-node--solar" id="mg-solar" onclick="expandNode('solar')">
+                            <div class="mg-node__header">
+                                <div class="mg-node__icon"><i class="fa-solid fa-leaf"></i></div>
+                                <div class="mg-node__header-text">
+                                    <div class="mg-node__title">Renewable Sources</div>
+                                    <div class="mg-node__summary" id="mg-solar-summary">Solar PV</div>
+                                </div>
+                                <button type="button" class="mg-node__close" onclick="event.stopPropagation(); collapseNode()">×</button>
+                            </div>
+                            <div class="mg-node__body" id="mg-solar-body">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- HPC Supercomputer Node (center) -->
+                        <div class="mg-node mg-node--hpc" id="mg-hpc" onclick="expandNode('hpc')">
+                            <div class="mg-node__header">
+                                <div class="mg-node__icon"><i class="fa-solid fa-server"></i></div>
+                                <div class="mg-node__header-text">
+                                    <div class="mg-node__title" id="mg-hpc-title">HPC Supercomputer</div>
+                                    <div class="mg-node__summary" id="mg-hpc-summary">Select a system</div>
+                                    <div class="mg-cluster-badges" id="mg-hpc-clusters"></div>
+                                </div>
+                                <button type="button" class="mg-node__close" onclick="event.stopPropagation(); collapseNode()">×</button>
+                            </div>
+                            <div class="mg-node__body" id="mg-hpc-body">
+                                <!-- Populated by JS -->
+                            </div>
+                            <div class="mg-hpc-actions" onclick="event.stopPropagation()">
+                                <button type="submit" class="btn btn-primary" id="btn-start-sim">
+                                    <i class="fa-solid fa-play btn-icon-svg"></i>
+                                    Start Simulation
+                                </button>
+                                <button type="button" class="btn btn-danger hidden" id="btn-cancel-sim">
+                                    <i class="fa-solid fa-stop btn-icon-svg"></i>
+                                    Cancel
+                                </button>
+                                <span class="text-muted" id="sim-status-text"></span>
+                            </div>
+                        </div>
+
+                        <!-- Power Grid Node -->
+                        <div class="mg-node mg-node--grid" id="mg-grid" onclick="expandNode('grid')">
+                            <div class="mg-node__header">
+                                <div class="mg-node__icon"><i class="fa-solid fa-plug-circle-bolt"></i></div>
+                                <div class="mg-node__header-text">
+                                    <div class="mg-node__title">Power Grid</div>
+                                    <div class="mg-node__summary" id="mg-grid-summary">Grid power limit</div>
+                                </div>
+                                <button type="button" class="mg-node__close" onclick="event.stopPropagation(); collapseNode()">×</button>
+                            </div>
+                            <div class="mg-node__body" id="mg-grid-body">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Datasets Node -->
+                        <div class="mg-node mg-node--datasets" id="mg-datasets" onclick="expandNode('datasets')">
+                            <div class="mg-node__header">
+                                <div class="mg-node__icon"><i class="fa-solid fa-database"></i></div>
+                                <div class="mg-node__header-text">
+                                    <div class="mg-node__title">Job Datasets</div>
+                                    <div class="mg-node__summary" id="mg-datasets-summary">Loading...</div>
+                                </div>
+                                <button type="button" class="mg-node__close" onclick="event.stopPropagation(); collapseNode()">×</button>
+                            </div>
+                            <div class="mg-node__body" id="mg-datasets-body">
+                                <!-- Shows dataset status + link to datasets tab -->
+                            </div>
+                        </div>
+
+                        <!-- Battery Node -->
+                        <div class="mg-node mg-node--battery" id="mg-battery" onclick="expandNode('battery')">
+                            <div class="mg-node__header">
+                                <div class="mg-node__icon"><i class="fa-solid fa-battery-three-quarters"></i></div>
+                                <div class="mg-node__header-text">
+                                    <div class="mg-node__title">Battery Storage</div>
+                                    <div class="mg-node__summary" id="mg-battery-summary">Auto-managed by microgrid</div>
+                                </div>
+                                <button type="button" class="mg-node__close" onclick="event.stopPropagation(); collapseNode()">×</button>
+                            </div>
+                            <div class="mg-node__body" id="mg-battery-body">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Job Scheduler Node -->
+                        <div class="mg-node mg-node--policies" id="mg-policies" onclick="expandNode('policies')">
+                            <div class="mg-node__header">
+                                <div class="mg-node__icon"><i class="fa-solid fa-brain"></i></div>
+                                <div class="mg-node__header-text">
+                                    <div class="mg-node__title">Job Scheduler</div>
+                                    <div class="mg-node__summary" id="mg-policies-summary">EFT-DVFS / Adaptive</div>
+                                </div>
+                                <button type="button" class="mg-node__close" onclick="event.stopPropagation(); collapseNode()">×</button>
+                            </div>
+                            <div class="mg-node__body" id="mg-policies-body">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Energy Scheduler Node -->
+                        <div class="mg-node mg-node--energy-scheduler" id="mg-energy_scheduler" onclick="expandNode('energy_scheduler')">
+                            <div class="mg-node__header">
+                                <div class="mg-node__icon"><i class="fa-solid fa-bolt"></i></div>
+                                <div class="mg-node__header-text">
+                                    <div class="mg-node__title">Energy Scheduler</div>
+                                    <div class="mg-node__summary" id="mg-energy_scheduler-summary">Budget policy / allocation</div>
+                                </div>
+                                <button type="button" class="mg-node__close" onclick="event.stopPropagation(); collapseNode()">×</button>
+                            </div>
+                            <div class="mg-node__body" id="mg-energy_scheduler-body">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Advanced Parameters Node -->
+                        <div class="mg-node mg-node--advanced" id="mg-advanced" onclick="expandNode('advanced')">
+                            <div class="mg-node__header">
+                                <div class="mg-node__icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                                <div class="mg-node__header-text">
+                                    <div class="mg-node__title">Advanced Parameters</div>
+                                    <div class="mg-node__summary" id="mg-advanced-summary">Runtime, plots, debug</div>
+                                </div>
+                                <button type="button" class="mg-node__close" onclick="event.stopPropagation(); collapseNode()">×</button>
+                            </div>
+                            <div class="mg-node__body" id="mg-advanced-body">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Terminal Output -->
+                <div class="card mt-lg hidden" id="sim-terminal-card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fa-solid fa-terminal card-icon"></i>
+                            Simulation Output
+                        </h2>
+                        <button class="btn btn-ghost btn-sm" onclick="clearTerminal()">Clear</button>
+                    </div>
+                    <div class="terminal" id="sim-terminal"></div>
+                </div>
+            </section>
+
+            <!-- ═══════════ RESULTS TAB ═══════════ -->
+            <section class="tab-panel" id="tab-results">
+                <div class="system-workspace">
+                    <aside class="system-sidebar" aria-label="Results supercomputer selection">
+                        <h2 class="system-sidebar-title">Supercomputers</h2>
+                        <nav class="system-list" id="results-systems" aria-label="Select a supercomputer"></nav>
+                    </aside>
+                    <div class="system-content">
+                <!-- Results List View -->
+                <div id="results-list-view">
+                    <div class="section-header">
+                        <div>
+                            <h1 class="section-title">Simulation Results</h1>
+                            <p class="section-subtitle" id="results-system-context">Browse completed simulation runs</p>
+                        </div>
+                        <div class="section-header-actions">
+                            <button class="btn btn-ghost" onclick="loadResults()">
+                                <i class="fa-solid fa-arrows-rotate btn-icon-svg"></i>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Sort Controls -->
+                    <div class="results-sort-bar" id="results-sort-bar">
+                        <div class="sort-label">Sort by:</div>
+                        <select class="form-select form-select-sm" id="results-sort-metric">
+                            <option value="">Date (newest first)</option>
+                            <option value="total_co2_kg">Total CO₂ (kg)</option>
+                            <option value="total_energy_kwh">Total Energy (kWh)</option>
+                            <option value="total_jobs_completed">Jobs Completed</option>
+                            <option value="p95_wait_time_s">P95 Wait Time</option>
+                            <option value="avg_wait_time_s">Avg Wait Time</option>
+                            <option value="avg_stretch_factor">Avg Stretch Factor</option>
+                        </select>
+                        <button class="btn btn-ghost btn-sm sort-dir-btn" id="results-sort-dir" onclick="toggleResultsSortDir()" title="Toggle sort direction">
+                            <i class="fa-solid fa-arrow-down-wide-short btn-icon-svg"></i>
+                            High → Low
+                        </button>
+                    </div>
+
+                    <div id="results-grouped-container">
+                        <div class="empty-state">
+                            <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                            <span class="title">Loading results...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Detail View -->
+                <div id="result-detail-view" class="hidden">
+                    <div class="result-detail-header">
+                        <button class="back-btn" onclick="showResultsList()">← Back to Results</button>
+                    </div>
+
+                    <!-- Config Summary -->
+                    <div class="card mb-lg" id="result-config-card">
+                        <div class="card-header">
+                            <h2 class="card-title" id="result-detail-title"></h2>
+                        </div>
+                        <div class="config-grid" id="result-config-grid"></div>
+                    </div>
+
+                    <!-- Plot Gallery -->
+                    <div class="card mb-lg">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                            <i class="fa-solid fa-chart-line card-icon"></i>
+                            Generated Plots
+                        </h2>
+                        </div>
+                        <div class="image-gallery" id="result-gallery"></div>
+                    </div>
+
+                    <!-- CSV Data Tables -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                            <i class="fa-solid fa-table card-icon"></i>
+                            Data Tables
+                        </h2>
+                        </div>
+                        <div class="csv-tabs" id="csv-tabs"></div>
+                        <div id="csv-table-area"></div>
+                    </div>
+                </div>
+                </div>
+                </div>
+            </section>
+
+            <!-- ═══════════ COMPARE TAB ═══════════ -->
+            <section class="tab-panel" id="tab-compare">
+                <div class="system-workspace">
+                    <aside class="system-sidebar" aria-label="Compare supercomputer selection">
+                        <h2 class="system-sidebar-title">Supercomputers</h2>
+                        <nav class="system-list" id="compare-systems" aria-label="Select a supercomputer"></nav>
+                    </aside>
+                    <div class="system-content">
+                <div class="section-header">
+                    <div>
+                        <h1 class="section-title">Compare Runs</h1>
+                        <p class="section-subtitle" id="compare-system-context">Select runs from one supercomputer to compare</p>
+                    </div>
+                </div>
+
+                <!-- Run Selection -->
+                <div class="card mb-lg">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fa-solid fa-list-check card-icon"></i>
+                            Select Runs to Compare
+                        </h2>
+                        <button class="btn btn-primary btn-sm" id="btn-compare" onclick="runComparison()" disabled>
+                            Compare Selected
+                        </button>
+                    </div>
+                    <div class="compare-selector" id="compare-selector"></div>
+                </div>
+
+                <!-- Comparison Results -->
+                <div id="compare-results" class="hidden">
+                    <!-- View Toggle -->
+                    <div class="compare-view-tabs">
+                        <button class="btn btn-ghost active" onclick="showCompareView('metrics')" id="compare-tab-metrics">
+                            <i class="fa-solid fa-table-list btn-icon-svg"></i>
+                            Metrics
+                        </button>
+                        <button class="btn btn-ghost" onclick="showCompareView('images')" id="compare-tab-images">
+                            <i class="fa-solid fa-chart-line btn-icon-svg"></i>
+                            Charts
+                        </button>
+                    </div>
+
+                    <!-- Metrics Table -->
+                    <div class="card mb-lg" id="compare-metrics-view">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                            <i class="fa-solid fa-magnifying-glass-chart card-icon"></i>
+                            Metrics Comparison
+                        </h2>
+                        </div>
+                        <div class="compare-table-container" id="compare-table-container"></div>
+                    </div>
+
+                    <!-- Images Side-by-Side -->
+                    <div class="card hidden" id="compare-images-view">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                            <i class="fa-solid fa-images card-icon"></i>
+                            Chart Comparison
+                        </h2>
+                        </div>
+                        <div class="compare-images-grid" id="compare-images-grid"></div>
+                    </div>
+                </div>
+                </div>
+                </div>
+            </section>
+
+            <!-- ═══════════ DATASETS TAB ═══════════ -->
+            <section class="tab-panel" id="tab-datasets">
+                <div class="system-workspace">
+                    <aside class="system-sidebar" aria-label="Datasets supercomputer selection">
+                        <h2 class="system-sidebar-title">Supercomputers</h2>
+                        <nav class="system-list" id="datasets-systems" aria-label="Select a supercomputer"></nav>
+                    </aside>
+                    <div class="system-content">
+                <div class="section-header">
+                    <div>
+                        <h1 class="section-title">Job Datasets</h1>
+                        <p class="section-subtitle" id="datasets-system-context">Manage workloads for the selected supercomputer</p>
+                    </div>
+                    <button class="btn btn-ghost" onclick="loadDatasets()">
+                        <i class="fa-solid fa-arrows-rotate btn-icon-svg"></i>
+                        Refresh
+                    </button>
+                </div>
+
+                <!-- Generate Form -->
+                <div class="gen-form" id="gen-form">
+                    <div class="form-group">
+                        <label class="form-label">Supercomputer</label>
+                        <select class="form-select" id="gen-system" disabled aria-label="Selected supercomputer"></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Reference / Max Jobs
+                            <span class="tooltip-trigger">?
+                                <span class="tooltip-text">Upper job count used by the workload generator. In balanced mode, smaller or more constrained clusters may receive fewer jobs.</span>
+                            </span>
+                        </label>
+                        <input type="number" class="form-input" id="gen-num-jobs" value="500" min="1" max="10000">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Minimum Jobs</label>
+                        <input type="number" class="form-input" id="gen-min-jobs" value="" min="1" max="10000" placeholder="Auto">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Load Strategy</label>
+                        <select class="form-select" id="gen-load-strategy">
+                            <option value="balanced" selected>Balanced finish</option>
+                            <option value="node-proportional">Node proportional</option>
+                            <option value="equal">Equal jobs</option>
+                        </select>
+                    </div>
+                    <div class="form-group dataset-weight-group">
+                        <label class="form-label">Cluster Load Weights</label>
+                        <div class="dataset-weight-grid" id="gen-cluster-weights"></div>
+                    </div>
+                    <button type="button" class="btn btn-success" id="btn-gen-datasets" onclick="generateDatasets()">
+                        <i class="fa-solid fa-wand-magic-sparkles btn-icon-svg"></i>
+                        Generate Datasets
+                    </button>
+                </div>
+
+                <div id="datasets-container"></div>
+                </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- ═══ Image Modal ═══ -->
+        <div class="image-modal" id="image-modal" onclick="closeImageModal()">
+            <button class="image-modal-close" onclick="closeImageModal()">✕</button>
+            <img id="image-modal-img" src="" alt="Full size plot">
+        </div>
+
+        <!-- ═══ Toast Container ═══ -->
+        <div class="toast-container" id="toast-container"></div>
+    </div>
+
+    <script src="/static/js/app.js?v=2.1.0"></script>
+    <script src="/static/js/systems.js?v=2.1.0"></script>
+    <script src="/static/js/simulation.js?v=2.1.0"></script>
+    <script src="/static/js/results.js?v=2.1.0"></script>
+    <script src="/static/js/compare.js?v=2.1.0"></script>
+    <script src="/static/js/datasets.js?v=2.1.0"></script>
+</body>
+</html>

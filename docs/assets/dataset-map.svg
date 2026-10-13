@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 460" role="img" aria-labelledby="title desc">
+  <title id="title">The three input groups used by WAVE</title>
+  <desc id="desc">System JSON files and node profiles define the machine. Per-queue job CSVs define the workload. Carbon and renewable CSV profiles define the energy inputs. The simulation driver loads all three groups.</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="none" stroke="#7890a5" stroke-width="1.5"/></marker></defs>
+  <rect width="1120" height="460" rx="20" fill="#f6f9fc"/>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="32" y="44" font-size="14" font-weight="700" letter-spacing="2" fill="#516c82">WHAT GOES INTO A RUN?</text>
+    <rect x="32" y="76" width="336" height="210" rx="16" fill="white" stroke="#dce6ee"/>
+    <rect x="392" y="76" width="336" height="210" rx="16" fill="white" stroke="#dce6ee"/>
+    <rect x="752" y="76" width="336" height="210" rx="16" fill="white" stroke="#dce6ee"/>
+    <rect x="56" y="101" width="5" height="25" rx="2" fill="#2b78bb"/>
+    <rect x="416" y="101" width="5" height="25" rx="2" fill="#5c64b8"/>
+    <rect x="776" y="101" width="5" height="25" rx="2" fill="#179469"/>
+    <text x="73" y="122" fill="#15324a" font-size="22" font-weight="700">The machine</text>
+    <text x="433" y="122" fill="#15324a" font-size="22" font-weight="700">The workload</text>
+    <text x="793" y="122" fill="#15324a" font-size="22" font-weight="700">The energy supply</text>
+    <g font-family="Consolas, monospace" font-size="15" fill="#34566f">
+      <text x="56" y="168">supercomputers/&lt;system&gt;.json</text>
+      <text x="56" y="197">node_config.json</text>
+      <text x="416" y="168">jobs/&lt;system&gt;/</text>
+      <text x="416" y="197">jobs_&lt;cluster&gt;_&lt;queue&gt;.csv</text>
+      <text x="776" y="168">historical_data.csv</text>
+      <text x="776" y="197">pv_gen.csv + wind_gen.csv</text>
+      <text x="776" y="226">renewable_sources.json</text>
+    </g>
+    <text x="56" y="255" fill="#73889b" font-size="14">Nodes, power, frequencies and queues</text>
+    <text x="416" y="255" fill="#73889b" font-size="14">Arrivals, compute work and resources</text>
+    <text x="776" y="255" fill="#73889b" font-size="14">Hourly profiles, columns and scales</text>
+    <path d="M200 302V322H920V302M560 302V350" fill="none" stroke="#7890a5" stroke-width="2" marker-end="url(#arrow)"/>
+    <rect x="325" y="364" width="470" height="60" rx="12" fill="#143b58"/>
+    <text x="560" y="389" text-anchor="middle" fill="white" font-size="17" font-weight="700">WAVE simulation driver</text>
+    <text x="560" y="411" text-anchor="middle" fill="#d4e8f5" font-size="14">scripts/simulation_energy.py &lt;system&gt;</text>
+  </g>
+</svg>

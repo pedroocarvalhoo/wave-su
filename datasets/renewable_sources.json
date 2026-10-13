@@ -1,0 +1,20 @@
+{
+    "pv": {
+        "label": "Solar PV",
+        "description": "Hourly solar PV capacity-factor profile in datasets/pv_gen.csv.",
+        "dataset": "pv_gen.csv",
+        "source_column": "P",
+        "signal_column": "pv_gen",
+        "default_scale_w": 400000.0,
+        "enabled_by_default": true
+    },
+    "wind": {
+        "label": "Wind",
+        "description": "Hourly Portugal onshore wind generation profile from Open Power System Data, normalized to peak output.",
+        "dataset": "wind_gen.csv",
+        "source_column": "P",
+        "signal_column": "wind_gen",
+        "default_scale_w": 400000.0,
+        "enabled_by_default": false
+    }
+}

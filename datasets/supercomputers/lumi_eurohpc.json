@@ -1,0 +1,32 @@
+{
+    "id": "lumi_eurohpc",
+    "label": "LUMI EuroHPC",
+    "clusters": {
+        "x86_epyc_milan": 2048,
+        "gpu_node_mi250x": 2560
+    },
+    "queues": [
+        {
+            "name": "short",
+            "min_runtime_s": 0,
+            "max_runtime_s": 86400,
+            "max_wait_s": 172800,
+            "priority_weight": 3
+        },
+        {
+            "name": "medium",
+            "min_runtime_s": 86400,
+            "max_runtime_s": 604800,
+            "max_wait_s": 604800,
+            "priority_weight": 2
+        },
+        {
+            "name": "long",
+            "min_runtime_s": 604800,
+            "max_runtime_s": null,
+            "max_wait_s": 1209600,
+            "priority_weight": 1
+        }
+    ],
+    "sla_policy": "enforce"
+}

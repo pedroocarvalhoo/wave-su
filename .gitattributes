@@ -1,0 +1,8 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Preserve PDF bytes and use binary diffs.
+*.pdf binary
+
+# Preserve published result values and original CSV line endings.
+results/thesis/data/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
